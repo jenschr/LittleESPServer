@@ -1,9 +1,11 @@
 # LittleESPServer
 A simple webserver for Internet of Things + Arduino/Teensy.
 
-I've looked around to find a simple and solid setup for using the ESP8266 module to provide wifi for my Arduino projects. What I want is to type a few lines of code and then have access to the web or a simple web server. In lack of other solutions, I came up with this and I use it for some of my own projects. If it's useful to others - feel free to use it.
+I've looked around to find a simple and solid setup for using the ESP8266 module to provide wifi for my Arduino projects. What I want is to type a few lines of code and then have access to the web or a simple web server. In lack of other solutions, I came up with this and I use it for some of my own projects.
 
-I made this because I use it for my own stuff. If you choose to use it and your stuff fails, don't blame me. I do however appreciate pull requests to fix/improve stuff. The more formal License is below:
+I know it's fully possible to use the Arduino IDE and program the ESP8266 chip directly using Open Source software, but all I'm interested in for the moment is to use the standard firmware and AT command set via Serial (UART).
+
+I made this because I use it for my own projects. If it's useful to others - feel free to use it according to the MIT license. If you choose to use it and your stuff fails, don't blame me. I do however appreciate pull requests to fix/improve the codebase.
 
 # Version history
 
@@ -11,7 +13,7 @@ I made this because I use it for my own stuff. If you choose to use it and your 
 
   * A basic, bare bones server setup that can connect to access points or be one by itself
   * Serves up any kind of pages in response to a request
-  * Really just works with a single connected client. Will solve this with a tiny que-system in next version that can handle the possible 4 requests that the 
+  * Really just works with a single connected client. Will solve this with a tiny que-system in next version that can handle the possible 4 requests that the ESP SDk can handle
   * Not optimised for use with Arduino Uno and other MCU's with less memory. I'll later optimise and change most Strings to char arrays to save memory
   * Only has a single example, showing how to set up a simple http-server
 
