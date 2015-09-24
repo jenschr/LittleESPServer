@@ -1,10 +1,10 @@
 #include <SPI.h>
 #include <Ethernet.h>
-#include "ESPServer.h"
+#include "LittleESPServer.h"
 
 // Note: Smaller Arduino boards such as the UNO should typically use SoftwareSerial
 // instead. Look here for instructions https://www.arduino.cc/en/Reference/SoftwareSerial
-ESPServer server = ESPServer( &Serial1 );
+LittleESPServer server = LittleESPServer( &Serial1 );
 
 String WLAN_SSID = "YourSSID";        // cannot be longer than 32 characters!
 String WLAN_PASS = "YourPassword";

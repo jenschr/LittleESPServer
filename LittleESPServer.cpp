@@ -6,6 +6,12 @@ LittleESPServer::LittleESPServer( Stream *serialConnection )
 {
   _serialConnection = serialConnection;
   status = STATUS_INITIALIZING;
+  // set defaults
+  initialized = false;
+  debugOutput = false;
+  cipmodeDefault = 0;
+  cipmuxDefault = 1;
+  clients[0].active = false;
 }
 
 void LittleESPServer::debug( bool turnOn )
@@ -143,18 +149,48 @@ bool LittleESPServer::available()
   if( i>0 ){
     readBuffer[i] = '\0'; // Terminate the buffer
 
-    // TODO: look for connects
-    // 0,CONNECT
+    // Look for connects
     if( strstr  ( readBuffer, "0,CONNECT" ) != NULL )
     {
-      activeClient0 = true;
+      clients[0].active = true;
+      Serial.println("Open 0");
+    }
+    if( strstr  ( readBuffer, "1,CONNECT" ) != NULL )
+    {
+      clients[1].active = true;
+      Serial.println("Open 1");
+    }
+    if( strstr  ( readBuffer, "2,CONNECT" ) != NULL )
+    {
+      clients[2].active = true;
+      Serial.println("Open 2");
+    }
+    if( strstr  ( readBuffer, "3,CONNECT" ) != NULL )
+    {
+      clients[3].active = true;
+      Serial.println("Open 3");
     }
 
-    // TODO: look for disconnects
-    // 0,CLOSED
+    // Look for closed connections (so we don't send to them)
     if( strstr  ( readBuffer, "0,CLOSED" ) != NULL )
     {
-      activeClient0 = false;
+      clients[0].active = false;
+      Serial.println("Close 0");
+    }
+    if( strstr  ( readBuffer, "1,CLOSED" ) != NULL )
+    {
+      clients[1].active = false;
+      Serial.println("Close 1");
+    }
+    if( strstr  ( readBuffer, "2,CLOSED" ) != NULL )
+    {
+      clients[2].active = false;
+      Serial.println("Close 2");
+    }
+    if( strstr  ( readBuffer, "3,CLOSED" ) != NULL )
+    {
+      clients[3].active = false;
+      Serial.println("Close 3");
     }
 
     // Look for URL requests
@@ -185,14 +221,39 @@ bool LittleESPServer::available()
         Serial.print(" requestedChannel ");
         Serial.println( requestedChannel );
         */
-        if( requestedChannel == 0 ){
-          strcpy( requestedUrl0, requestedUrl );
+        Serial.print(" requestedUrl ");
+        Serial.println( requestedUrl );
+        Serial.print(" requestedChannel ");
+        Serial.println( channelAsString );
+        Serial.println(" ********************* ");
+        Serial.println( readBuffer );
+        Serial.println(" ********************* ");
+
+        /*
+        * If the /favicon.ico file has already been sent,
+        * the ESP unit may incorrectly report it as being
+        * requested on channel 0.
+        */
+
+        if( requestedUrl == "/favicon.ico " ){
+          Serial.print("favicon request ignored ");
+          Serial.println(requestedUrl);
+        } else if( requestedChannel == 0 ){
+          strcpy( clients[0].url, requestedUrl );
+          Serial.print("GET 0 ");
+          Serial.println(requestedUrl);
         } else if( requestedChannel == 1 ){
-          strcpy( requestedUrl1, requestedUrl );
+          strcpy( clients[1].url, requestedUrl );
+          Serial.print("GET 1 ");
+          Serial.println(requestedUrl);
         } else if( requestedChannel == 2 ){
-          strcpy( requestedUrl2, requestedUrl );
+          strcpy( clients[2].url, requestedUrl );
+          Serial.print("GET 2 ");
+          Serial.println(requestedUrl);
         } else if( requestedChannel == 3 ){
-          strcpy( requestedUrl3, requestedUrl );
+          strcpy( clients[3].url, requestedUrl );
+          Serial.print("GET 3 ");
+          Serial.println(requestedUrl);
         }
       }
       //Serial.print("readBuffer ");
@@ -242,7 +303,7 @@ void LittleESPServer::pathRequested( char *pointerToSavePathIn )
 bool LittleESPServer::send( uint8_t clientID, String page )
 {
   //AT+CIPSEND=id,length,data
-  //if( activeClient0 != clientID){ return false; }
+  //if( clients[0].active != clientID){ return false; }
 
   int contentLength = page.length();
   String commandd = AT_DO_TRANSFER;

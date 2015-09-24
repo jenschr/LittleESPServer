@@ -81,11 +81,20 @@ typedef enum
   STANDALONE_AND_AP = 3
 } cwmode_t;
 
+struct ESPClient
+{
+  public:
+    bool active;
+    uint8_t channel;
+    char url[255];
+};
+
 class LittleESPServer
 {
 public:
   status_t status;       // set when the server status changes
-  bool debugOutput = false;
+  bool debugOutput;
+  ESPClient clients[4];
 
   // The server will just take a serial connection as Input
   LittleESPServer( Stream *serialConnection );
@@ -111,26 +120,18 @@ public:
   uint8_t  pollForStatus(void);
 
 private:
-  byte cipmodeDefault = 0;
-  byte cipmuxDefault = 1;
+  byte cipmodeDefault;
+  byte cipmuxDefault;
   int portNumber;
   Stream *_serialConnection;
   String parseBuffer;
 
   // The ESP can serve 4 simultaneous connections
   char requestedUrl[255];
-  char requestedUrl0[255];
-  char requestedUrl1[255];
-  char requestedUrl2[255];
-  char requestedUrl3[255];
-  bool activeClient0 = false;
-  bool activeClient1 = false;
-  bool activeClient2 = false;
-  bool activeClient3 = false;
   int requestedChannel;
   char readBuffer[1024];
 
-  bool initialized = false;
+  bool initialized;
   int contains( char *haystack, char *needle);
   bool parseSerial( const char *command, int millisecondTimeout, String parseUntilWeSeeThis, String errorIfWeSeeThis );
   bool parseSerial( char *command, int millisecondTimeout, String parseUntilWeSeeThis, String errorIfWeSeeThis );
